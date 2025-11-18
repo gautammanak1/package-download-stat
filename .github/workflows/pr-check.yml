@@ -53,6 +53,12 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         run: |
           git log --oneline origin/main..HEAD | while read line; do
+            # Skip merge commits (they start with "Merge" or have "into" in them)
+            if echo "$line" | grep -qE "^[a-f0-9]+ Merge|into [a-f0-9]+"; then
+              echo "ℹ️ Skipping merge commit: $line"
+              continue
+            fi
+            # Validate other commits follow Conventional Commits format
             if ! echo "$line" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:"; then
               echo "❌ Invalid commit message: $line"
               echo "Commit messages must follow Conventional Commits format"
