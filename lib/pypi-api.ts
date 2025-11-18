@@ -124,26 +124,16 @@ export async function getPyPIOverallDownloads(
   packageName: string
 ): Promise<{ total: number; period: string } | null> {
   try {
-    const url = `https://pypistats.org/api/packages/${packageName.toLowerCase()}/overall`;
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
-    
-    const response = await fetch(url, {
-      signal: controller.signal,
-    });
-    
-    clearTimeout(timeoutId);
+    // Use server-side API route to avoid CORS issues
+    const response = await fetch(`/api/pypi-stats?package=${encodeURIComponent(packageName.toLowerCase())}&overall=true`);
     
     if (!response.ok) {
-      // If 404 or other error, return null instead of throwing
-      // Some packages may not have overall stats available
-      // Don't log or throw - this is expected behavior
       return null;
     }
     
-    return response.json();
+    const result = await response.json();
+    return result.overall || null;
   } catch (error) {
-    // Return null if request fails - silent fail
     return null;
   }
 }

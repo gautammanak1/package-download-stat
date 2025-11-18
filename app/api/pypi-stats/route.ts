@@ -41,10 +41,7 @@ async function getBigQueryClient() {
         if (credentials.project_id) {
           bigqueryOptions.projectId = credentials.project_id;
         }
-        console.log('✅ Using BigQuery credentials from GOOGLE_APPLICATION_CREDENTIALS_JSON env var');
-        console.log(`✅ Project ID: ${credentials.project_id || 'not found'}`);
       } catch (parseError: any) {
-        console.warn('⚠️ Failed to parse GOOGLE_APPLICATION_CREDENTIALS_JSON:', parseError.message);
       }
     }
     // Priority 2: Check environment variable for file path
@@ -66,7 +63,6 @@ async function getBigQueryClient() {
         } catch (e) {
           // Ignore errors reading project ID
         }
-        console.log('✅ Using BigQuery credentials from:', credentialsPath);
       }
     }
     // Priority 3: Check for credentials file in project root (local development)
@@ -85,13 +81,11 @@ async function getBigQueryClient() {
         } catch (e) {
           // Ignore errors reading project ID
         }
-        console.log('✅ Using BigQuery credentials from local file:', credentialsPath);
       }
     }
     
     // If no credentials found, try Application Default Credentials
     if (!bigqueryOptions.credentials && !bigqueryOptions.keyFilename) {
-      console.log('⚠️ No credentials found, attempting Application Default Credentials');
     }
     
     // Ensure project ID is set
@@ -99,28 +93,10 @@ async function getBigQueryClient() {
       bigqueryOptions.projectId = process.env.GOOGLE_CLOUD_PROJECT;
     }
     
-    // Log configuration for debugging
-    console.log('🔍 BigQuery Options:', {
-      hasCredentials: !!bigqueryOptions.credentials,
-      hasKeyFilename: !!bigqueryOptions.keyFilename,
-      projectId: bigqueryOptions.projectId || 'not set',
-      hasEnvVar: !!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
-    });
-    
     bigqueryClient = new BigQuery(bigqueryOptions);
-    
-    // Test connection by getting project
-    try {
-      const [project] = await bigqueryClient.getProjectId();
-      console.log(`✅ BigQuery connected to project: ${project}`);
-    } catch (testError: any) {
-      console.warn('⚠️ BigQuery connection test failed:', testError.message);
-      console.warn('💡 Debug info - Project ID:', bigqueryOptions.projectId || 'not set');
-    }
     
     return bigqueryClient;
   } catch (error: any) {
-    console.warn('❌ BigQuery not available:', error.message);
     return null;
   }
 }
@@ -129,6 +105,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const packageName = searchParams.get("package");
   const period = searchParams.get("period") || "month";
+  const overall = searchParams.get("overall") === "true";
 
   if (!packageName) {
     return NextResponse.json(
@@ -175,13 +152,10 @@ export async function GET(request: NextRequest) {
           jobTimeoutMs: 30000, // 30 second timeout
         };
 
-        console.log(`Querying BigQuery for package: ${normalizedName}, period: ${period}, days: ${days}`);
         const [job] = await bigquery.createQueryJob(options);
-        console.log(`BigQuery job created: ${job.id}`);
         
         // Wait for job to complete
         const [rows] = await job.getQueryResults();
-        console.log(`BigQuery query completed, rows: ${rows.length}`);
 
         if (rows && rows.length > 0) {
           const formattedData = rows.map((row: any) => {
@@ -200,7 +174,6 @@ export async function GET(request: NextRequest) {
           });
         }
       } catch (bigqueryError: any) {
-        console.warn('BigQuery query failed:', bigqueryError.message);
         // Fall through to pypistats.org
       }
     }

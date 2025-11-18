@@ -30,10 +30,7 @@ async function getBigQueryClient() {
         if (credentials.project_id) {
           bigqueryOptions.projectId = credentials.project_id;
         }
-        console.log('✅ Using BigQuery credentials from GOOGLE_APPLICATION_CREDENTIALS_JSON env var');
-        console.log(`✅ Project ID: ${credentials.project_id || 'not found'}`);
       } catch (parseError: any) {
-        console.warn('⚠️ Failed to parse GOOGLE_APPLICATION_CREDENTIALS_JSON:', parseError.message);
       }
     }
     // Priority 2: Check environment variable for file path
@@ -54,7 +51,6 @@ async function getBigQueryClient() {
         } catch (e) {
           // Ignore errors reading project ID
         }
-        console.log('✅ Using BigQuery credentials from:', credentialsPath);
       }
     }
     // Priority 3: Check for credentials file in project root (local development)
@@ -73,13 +69,11 @@ async function getBigQueryClient() {
         } catch (e) {
           // Ignore errors reading project ID
         }
-        console.log('✅ Using BigQuery credentials from local file:', credentialsPath);
       }
     }
     
     // If no credentials found, try Application Default Credentials
     if (!bigqueryOptions.credentials && !bigqueryOptions.keyFilename) {
-      console.log('⚠️ No credentials found, attempting Application Default Credentials');
     }
     
     // Ensure project ID is set
@@ -87,28 +81,10 @@ async function getBigQueryClient() {
       bigqueryOptions.projectId = process.env.GOOGLE_CLOUD_PROJECT;
     }
     
-    // Log configuration for debugging
-    console.log('🔍 BigQuery Options:', {
-      hasCredentials: !!bigqueryOptions.credentials,
-      hasKeyFilename: !!bigqueryOptions.keyFilename,
-      projectId: bigqueryOptions.projectId || 'not set',
-      hasEnvVar: !!process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON
-    });
-    
     bigqueryClient = new BigQuery(bigqueryOptions);
-    
-    // Test connection
-    try {
-      const [project] = await bigqueryClient.getProjectId();
-      console.log(`✅ BigQuery connected to project: ${project}`);
-    } catch (testError: any) {
-      console.warn('⚠️ BigQuery connection test failed:', testError.message);
-      console.warn('💡 Debug info - Project ID:', bigqueryOptions.projectId || 'not set');
-    }
     
     return bigqueryClient;
   } catch (error: any) {
-    console.warn('❌ BigQuery not available:', error.message);
     return null;
   }
 }
@@ -168,7 +144,6 @@ export async function GET(request: NextRequest) {
         const totalRows = await executeQuery(bigquery, totalQuery, { packageName: normalizedName });
         results.totalDownloads = totalRows[0]?.total_downloads || 0;
       } catch (error: any) {
-        console.warn('Total downloads query failed:', error.message);
       }
     }
 
@@ -187,7 +162,6 @@ export async function GET(request: NextRequest) {
         });
         results.totalDownloadsThisYear = yearlyRows[0]?.total_downloads || 0;
       } catch (error: any) {
-        console.warn('Yearly downloads query failed:', error.message);
       }
     }
 
@@ -213,7 +187,6 @@ export async function GET(request: NextRequest) {
           downloads: parseInt(row.num_downloads) || 0,
         }));
       } catch (error: any) {
-        console.warn('Monthly downloads query failed:', error.message);
       }
     }
 
@@ -243,7 +216,6 @@ export async function GET(request: NextRequest) {
           };
         });
       } catch (error: any) {
-        console.warn('Top dates query failed:', error.message);
       }
     }
 
@@ -271,7 +243,6 @@ export async function GET(request: NextRequest) {
           downloads: parseInt(row.num_downloads) || 0,
         }));
       } catch (error: any) {
-        console.warn('Top countries query failed:', error.message);
       }
     }
 
@@ -299,7 +270,6 @@ export async function GET(request: NextRequest) {
           downloads: parseInt(row.num_downloads) || 0,
         }));
       } catch (error: any) {
-        console.warn('Top countries today query failed:', error.message);
       }
     }
 
@@ -332,7 +302,6 @@ export async function GET(request: NextRequest) {
           };
         });
       } catch (error: any) {
-        console.warn('Top dates this month query failed:', error.message);
       }
     }
 
@@ -364,7 +333,6 @@ export async function GET(request: NextRequest) {
           };
         });
       } catch (error: any) {
-        console.warn('Custom range query failed:', error.message);
       }
     }
 
