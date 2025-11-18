@@ -6,9 +6,7 @@ interface TabsContextValue {
   onValueChange: (value: string) => void;
 }
 
-const TabsContext = React.createContext<TabsContextValue | undefined>(
-  undefined
-);
+const TabsContext = React.createContext<TabsContextValue | undefined>(undefined);
 
 const Tabs = React.forwardRef<
   HTMLDivElement,
@@ -18,9 +16,7 @@ const Tabs = React.forwardRef<
     onValueChange?: (value: string) => void;
   }
 >(({ className, value: controlledValue, defaultValue, onValueChange, ...props }, ref) => {
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(
-    defaultValue || ""
-  );
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultValue || "");
   const value = controlledValue ?? uncontrolledValue;
   const handleValueChange = onValueChange ?? setUncontrolledValue;
 
@@ -32,19 +28,18 @@ const Tabs = React.forwardRef<
 });
 Tabs.displayName = "Tabs";
 
-const TabsList = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn(
-      "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
-      className
-    )}
-    {...props}
-  />
-));
+const TabsList = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
+  ({ className, ...props }, ref) => (
+    <div
+      ref={ref}
+      className={cn(
+        "inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 TabsList.displayName = "TabsList";
 
 const TabsTrigger = React.forwardRef<
@@ -104,4 +99,3 @@ const TabsContent = React.forwardRef<
 TabsContent.displayName = "TabsContent";
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };
-

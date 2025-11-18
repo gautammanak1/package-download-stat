@@ -18,22 +18,23 @@
 ## Related Issues
 
 <!-- Link related issues here -->
+
 Closes #
 
 ## Changes Made
 
 <!-- Describe the changes you made in detail -->
 
-- 
-- 
-- 
+-
+-
+-
 
 ## Screenshots (if applicable)
 
 <!-- Add screenshots to help explain your changes -->
 
 | Before | After |
-|--------|-------|
+| ------ | ----- |
 |        |       |
 
 ## Testing
@@ -63,4 +64,3 @@ Closes #
 ## Additional Notes
 
 <!-- Add any additional notes or context here -->
-

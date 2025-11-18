@@ -13,13 +13,13 @@ async function getBigQueryClient() {
   }
 
   try {
-    const { BigQuery } = await import('@google-cloud/bigquery');
-    const path = await import('path');
-    const fs = await import('fs');
-    
+    const { BigQuery } = await import("@google-cloud/bigquery");
+    const path = await import("path");
+    const fs = await import("fs");
+
     let bigqueryOptions: any = {};
     let credentialsPath: string | null = null;
-    
+
     // Priority 1: Check for JSON credentials in environment variable (Vercel)
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
       try {
@@ -30,8 +30,7 @@ async function getBigQueryClient() {
         if (credentials.project_id) {
           bigqueryOptions.projectId = credentials.project_id;
         }
-      } catch (parseError: any) {
-      }
+      } catch (parseError: any) {}
     }
     // Priority 2: Check environment variable for file path
     else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -43,7 +42,7 @@ async function getBigQueryClient() {
         bigqueryOptions.keyFilename = credentialsPath;
         // Try to read project ID from file
         try {
-          const fileContent = fs.default.readFileSync(credentialsPath, 'utf8');
+          const fileContent = fs.default.readFileSync(credentialsPath, "utf8");
           const creds = JSON.parse(fileContent);
           if (creds.project_id) {
             bigqueryOptions.projectId = creds.project_id;
@@ -55,13 +54,13 @@ async function getBigQueryClient() {
     }
     // Priority 3: Check for credentials file in project root (local development)
     else {
-      const defaultPath = path.default.join(process.cwd(), 'extreme-battery-463111-f5.json');
+      const defaultPath = path.default.join(process.cwd(), "extreme-battery-463111-f5.json");
       if (fs.default.existsSync(defaultPath)) {
         credentialsPath = defaultPath;
         bigqueryOptions.keyFilename = credentialsPath;
         // Try to read project ID from file
         try {
-          const fileContent = fs.default.readFileSync(defaultPath, 'utf8');
+          const fileContent = fs.default.readFileSync(defaultPath, "utf8");
           const creds = JSON.parse(fileContent);
           if (creds.project_id) {
             bigqueryOptions.projectId = creds.project_id;
@@ -71,18 +70,18 @@ async function getBigQueryClient() {
         }
       }
     }
-    
+
     // If no credentials found, try Application Default Credentials
     if (!bigqueryOptions.credentials && !bigqueryOptions.keyFilename) {
     }
-    
+
     // Ensure project ID is set
     if (!bigqueryOptions.projectId && process.env.GOOGLE_CLOUD_PROJECT) {
       bigqueryOptions.projectId = process.env.GOOGLE_CLOUD_PROJECT;
     }
-    
+
     bigqueryClient = new BigQuery(bigqueryOptions);
-    
+
     return bigqueryClient;
   } catch (error: any) {
     return null;
@@ -93,7 +92,7 @@ async function executeQuery(bigquery: any, query: string, params: any = {}) {
   const options = {
     query,
     params,
-    location: 'US',
+    location: "US",
     jobTimeoutMs: 60000, // 60 second timeout for complex queries
   };
 
@@ -110,20 +109,17 @@ export async function GET(request: NextRequest) {
   const toDate = searchParams.get("to");
 
   if (!packageName) {
-    return NextResponse.json(
-      { error: "Package name is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Package name is required" }, { status: 400 });
   }
 
   const normalizedName = packageName.toLowerCase();
   const currentYear = new Date().getFullYear();
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toISOString().split("T")[0];
   const currentMonth = new Date().getMonth() + 1;
 
   try {
     const bigquery = await getBigQueryClient();
-    
+
     if (!bigquery) {
       return NextResponse.json(
         { success: false, error: "BigQuery not available" },
@@ -143,8 +139,7 @@ export async function GET(request: NextRequest) {
         `;
         const totalRows = await executeQuery(bigquery, totalQuery, { packageName: normalizedName });
         results.totalDownloads = totalRows[0]?.total_downloads || 0;
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Total Downloads of This Year
@@ -156,13 +151,12 @@ export async function GET(request: NextRequest) {
           WHERE file.project = @packageName 
             AND EXTRACT(YEAR FROM timestamp) = @currentYear
         `;
-        const yearlyRows = await executeQuery(bigquery, yearlyQuery, { 
+        const yearlyRows = await executeQuery(bigquery, yearlyQuery, {
           packageName: normalizedName,
-          currentYear: currentYear 
+          currentYear: currentYear,
         });
         results.totalDownloadsThisYear = yearlyRows[0]?.total_downloads || 0;
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Monthly Downloads of This Year
@@ -178,16 +172,15 @@ export async function GET(request: NextRequest) {
           GROUP BY month
           ORDER BY month ASC
         `;
-        const monthlyRows = await executeQuery(bigquery, monthlyQuery, { 
+        const monthlyRows = await executeQuery(bigquery, monthlyQuery, {
           packageName: normalizedName,
-          currentYear: currentYear 
+          currentYear: currentYear,
         });
         results.monthlyDownloads = monthlyRows.map((row: any) => ({
           month: parseInt(row.month) || 0,
           downloads: parseInt(row.num_downloads) || 0,
         }));
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Top 10 Dates by Download Count (This Year)
@@ -204,19 +197,18 @@ export async function GET(request: NextRequest) {
           ORDER BY num_downloads DESC
           LIMIT 10
         `;
-        const topDatesRows = await executeQuery(bigquery, topDatesQuery, { 
+        const topDatesRows = await executeQuery(bigquery, topDatesQuery, {
           packageName: normalizedName,
-          currentYear: currentYear 
+          currentYear: currentYear,
         });
         results.topDates = topDatesRows.map((row: any) => {
           const dateValue = row.download_date?.value || row.download_date;
           return {
-            date: typeof dateValue === 'string' ? dateValue : dateValue.toISOString().split('T')[0],
+            date: typeof dateValue === "string" ? dateValue : dateValue.toISOString().split("T")[0],
             downloads: parseInt(row.num_downloads) || 0,
           };
         });
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Top 10 Countries This Year
@@ -234,16 +226,15 @@ export async function GET(request: NextRequest) {
           ORDER BY num_downloads DESC
           LIMIT 10
         `;
-        const topCountriesRows = await executeQuery(bigquery, topCountriesQuery, { 
+        const topCountriesRows = await executeQuery(bigquery, topCountriesQuery, {
           packageName: normalizedName,
-          currentYear: currentYear 
+          currentYear: currentYear,
         });
         results.topCountries = topCountriesRows.map((row: any) => ({
-          country: row.country_code || 'Unknown',
+          country: row.country_code || "Unknown",
           downloads: parseInt(row.num_downloads) || 0,
         }));
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Top 10 Countries Today
@@ -261,22 +252,21 @@ export async function GET(request: NextRequest) {
           ORDER BY num_downloads DESC
           LIMIT 10
         `;
-        const topCountriesTodayRows = await executeQuery(bigquery, topCountriesTodayQuery, { 
+        const topCountriesTodayRows = await executeQuery(bigquery, topCountriesTodayQuery, {
           packageName: normalizedName,
-          today: today 
+          today: today,
         });
         results.topCountriesToday = topCountriesTodayRows.map((row: any) => ({
-          country: row.country_code || 'Unknown',
+          country: row.country_code || "Unknown",
           downloads: parseInt(row.num_downloads) || 0,
         }));
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Top 10 Dates This Month (Custom Date Range)
     if (queryType === "all" || queryType === "topDatesThisMonth") {
       try {
-        const startOfMonth = new Date(currentYear, currentMonth - 1, 1).toISOString().split('T')[0];
+        const startOfMonth = new Date(currentYear, currentMonth - 1, 1).toISOString().split("T")[0];
         const topDatesMonthQuery = `
           SELECT 
             DATE(timestamp) AS download_date, 
@@ -289,20 +279,19 @@ export async function GET(request: NextRequest) {
           ORDER BY num_downloads DESC
           LIMIT 10
         `;
-        const topDatesMonthRows = await executeQuery(bigquery, topDatesMonthQuery, { 
+        const topDatesMonthRows = await executeQuery(bigquery, topDatesMonthQuery, {
           packageName: normalizedName,
           startOfMonth: startOfMonth,
-          today: today 
+          today: today,
         });
         results.topDatesThisMonth = topDatesMonthRows.map((row: any) => {
           const dateValue = row.download_date?.value || row.download_date;
           return {
-            date: typeof dateValue === 'string' ? dateValue : dateValue.toISOString().split('T')[0],
+            date: typeof dateValue === "string" ? dateValue : dateValue.toISOString().split("T")[0],
             downloads: parseInt(row.num_downloads) || 0,
           };
         });
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     // Custom Date Range - Top 10 Dates
@@ -320,20 +309,19 @@ export async function GET(request: NextRequest) {
           ORDER BY num_downloads DESC
           LIMIT 10
         `;
-        const customRangeRows = await executeQuery(bigquery, customRangeQuery, { 
+        const customRangeRows = await executeQuery(bigquery, customRangeQuery, {
           packageName: normalizedName,
           fromDate: fromDate,
-          toDate: toDate 
+          toDate: toDate,
         });
         results.customRangeTopDates = customRangeRows.map((row: any) => {
           const dateValue = row.download_date?.value || row.download_date;
           return {
-            date: typeof dateValue === 'string' ? dateValue : dateValue.toISOString().split('T')[0],
+            date: typeof dateValue === "string" ? dateValue : dateValue.toISOString().split("T")[0],
             downloads: parseInt(row.num_downloads) || 0,
           };
         });
-      } catch (error: any) {
-      }
+      } catch (error: any) {}
     }
 
     return NextResponse.json({
@@ -342,7 +330,6 @@ export async function GET(request: NextRequest) {
       package: normalizedName,
       source: "bigquery",
     });
-
   } catch (error: any) {
     return NextResponse.json(
       {
@@ -353,4 +340,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-

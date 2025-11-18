@@ -21,7 +21,7 @@ export function AuthorInfo({ author }: AuthorInfoProps) {
 
   // Handle different author formats
   let authors: Author[] = [];
-  
+
   if (typeof author === "string") {
     // Simple string format
     authors = [{ name: author }];
@@ -61,10 +61,7 @@ export function AuthorInfo({ author }: AuthorInfoProps) {
                 {author.email && (
                   <div className="flex items-center gap-2">
                     <Mail className="h-4 w-4 text-muted-foreground" />
-                    <a
-                      href={`mailto:${author.email}`}
-                      className="text-primary hover:underline"
-                    >
+                    <a href={`mailto:${author.email}`} className="text-primary hover:underline">
                       {author.email}
                     </a>
                   </div>
@@ -86,9 +83,7 @@ export function AuthorInfo({ author }: AuthorInfoProps) {
                     </a>
                   </div>
                 )}
-                {index < authors.length - 1 && (
-                  <div className="border-t border-border pt-4 mt-4" />
-                )}
+                {index < authors.length - 1 && <div className="border-t border-border pt-4 mt-4" />}
               </div>
             ))}
           </div>
@@ -97,4 +92,3 @@ export function AuthorInfo({ author }: AuthorInfoProps) {
     </motion.div>
   );
 }
-

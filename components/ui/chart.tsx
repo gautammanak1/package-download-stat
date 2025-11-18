@@ -1,21 +1,21 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 // Chart container component
 export interface ChartConfig {
   [key: string]: {
-    label?: string
-    color?: string
-  }
+    label?: string;
+    color?: string;
+  };
 }
 
 interface ChartContainerProps {
-  id?: string
-  config?: ChartConfig
-  className?: string
-  children: React.ReactNode
+  id?: string;
+  config?: ChartConfig;
+  className?: string;
+  children: React.ReactNode;
 }
 
 export function ChartContainer({ id, config, className, children }: ChartContainerProps) {
@@ -23,14 +23,14 @@ export function ChartContainer({ id, config, className, children }: ChartContain
     <div id={id} className={cn("w-full", className)}>
       {children}
     </div>
-  )
+  );
 }
 
 // Chart tooltip component
 interface ChartTooltipProps {
-  content?: React.ReactNode
-  cursor?: boolean | object
-  children?: React.ReactNode
+  content?: React.ReactNode;
+  cursor?: boolean | object;
+  children?: React.ReactNode;
 }
 
 export function ChartTooltip({ content, cursor, children }: ChartTooltipProps) {
@@ -38,19 +38,19 @@ export function ChartTooltip({ content, cursor, children }: ChartTooltipProps) {
     return React.cloneElement(children as React.ReactElement, {
       content,
       cursor,
-    })
+    });
   }
-  return null
+  return null;
 }
 
 // Chart tooltip content component
 interface ChartTooltipContentProps {
-  className?: string
-  hideLabel?: boolean
-  nameKey?: string
-  labelFormatter?: (value: any) => string
-  formatter?: (value: any, name: string) => [string, string]
-  children?: React.ReactNode
+  className?: string;
+  hideLabel?: boolean;
+  nameKey?: string;
+  labelFormatter?: (value: any) => string;
+  formatter?: (value: any, name: string) => [string, string];
+  children?: React.ReactNode;
 }
 
 export function ChartTooltipContent({
@@ -61,25 +61,25 @@ export function ChartTooltipContent({
   formatter,
   ...props
 }: ChartTooltipContentProps) {
-  return null // This will be handled by Recharts Tooltip component
+  return null; // This will be handled by Recharts Tooltip component
 }
 
 // Chart style component for CSS variables
 interface ChartStyleProps {
-  id: string
-  config: ChartConfig
+  id: string;
+  config: ChartConfig;
 }
 
 export function ChartStyle({ id, config }: ChartStyleProps) {
   const cssVars = React.useMemo(() => {
-    const vars: Record<string, string> = {}
+    const vars: Record<string, string> = {};
     Object.entries(config).forEach(([key, value]) => {
       if (value.color) {
-        vars[`--color-${key}`] = value.color
+        vars[`--color-${key}`] = value.color;
       }
-    })
-    return vars
-  }, [config])
+    });
+    return vars;
+  }, [config]);
 
   return (
     <style
@@ -93,6 +93,5 @@ export function ChartStyle({ id, config }: ChartStyleProps) {
         `,
       }}
     />
-  )
+  );
 }
-

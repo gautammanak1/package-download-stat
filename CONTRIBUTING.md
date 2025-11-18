@@ -137,6 +137,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 ```
 
 **Types:**
+
 - `feat`: A new feature
 - `fix`: A bug fix
 - `docs`: Documentation only changes
@@ -147,6 +148,7 @@ We follow the [Conventional Commits](https://www.conventionalcommits.org/) speci
 - `chore`: Changes to build process or auxiliary tools
 
 **Examples:**
+
 ```
 feat(charts): Add colorful bars to download charts
 
@@ -185,4 +187,3 @@ docs(readme): Update installation instructions
 Feel free to open an issue for any questions you might have about contributing.
 
 Thank you for contributing! 🎉
-

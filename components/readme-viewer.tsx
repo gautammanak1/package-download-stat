@@ -24,9 +24,11 @@ export function ReadmeViewer({ readme, packageName, repositoryUrl }: ReadmeViewe
     if (repositoryUrl) {
       // Extract base URL from repository URL
       let baseUrl = "";
-      
+
       // Handle GitHub URLs (handle both https://github.com and git+https://github.com formats)
-      const githubMatch = repositoryUrl.match(/(?:github\.com|git\+https:\/\/github\.com)\/([^\/]+\/[^\/]+?)(?:\.git)?/);
+      const githubMatch = repositoryUrl.match(
+        /(?:github\.com|git\+https:\/\/github\.com)\/([^\/]+\/[^\/]+?)(?:\.git)?/
+      );
       if (githubMatch) {
         baseUrl = `https://raw.githubusercontent.com/${githubMatch[1]}/HEAD`;
       }
@@ -47,20 +49,15 @@ export function ReadmeViewer({ readme, packageName, repositoryUrl }: ReadmeViewe
 
       if (baseUrl) {
         // Replace relative image URLs with absolute URLs
-        processed = processed.replace(
-          /!\[([^\]]*)\]\(([^)]+)\)/g,
-          (match, alt, src) => {
-            // If already absolute URL, keep as is
-            if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {
-              return match;
-            }
-            // If relative URL, convert to absolute
-            const absoluteSrc = src.startsWith("/") 
-              ? `${baseUrl}${src}` 
-              : `${baseUrl}/${src}`;
-            return `![${alt}](${absoluteSrc})`;
+        processed = processed.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (match, alt, src) => {
+          // If already absolute URL, keep as is
+          if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {
+            return match;
           }
-        );
+          // If relative URL, convert to absolute
+          const absoluteSrc = src.startsWith("/") ? `${baseUrl}${src}` : `${baseUrl}/${src}`;
+          return `![${alt}](${absoluteSrc})`;
+        });
 
         // Also handle HTML img tags
         processed = processed.replace(
@@ -69,9 +66,7 @@ export function ReadmeViewer({ readme, packageName, repositoryUrl }: ReadmeViewe
             if (src.startsWith("http://") || src.startsWith("https://") || src.startsWith("//")) {
               return match;
             }
-            const absoluteSrc = src.startsWith("/") 
-              ? `${baseUrl}${src}` 
-              : `${baseUrl}/${src}`;
+            const absoluteSrc = src.startsWith("/") ? `${baseUrl}${src}` : `${baseUrl}/${src}`;
             return `<img${before}src="${absoluteSrc}"${after}>`;
           }
         );
@@ -102,19 +97,19 @@ export function ReadmeViewer({ readme, packageName, repositoryUrl }: ReadmeViewe
         </CardHeader>
         <CardContent>
           <div className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-semibold prose-a:text-primary prose-code:text-primary prose-pre:bg-muted prose-pre:border prose-pre:border-border">
-            <ReactMarkdown 
+            <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               rehypePlugins={[rehypeRaw]}
               components={{
                 img: ({ node, ...props }) => (
-                  <img 
-                    {...props} 
-                    alt={props.alt || "Image"} 
+                  <img
+                    {...props}
+                    alt={props.alt || "Image"}
                     loading="lazy"
                     onError={(e) => {
                       // Fallback for broken images
                       const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
+                      target.style.display = "none";
                     }}
                     className="max-w-full rounded-lg my-4"
                   />

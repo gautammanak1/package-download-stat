@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - Initial open source release
 - Contribution guidelines
 - Code of conduct
@@ -19,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2025-11-18
 
 ### Added
+
 - npm package download statistics
 - PyPI package download statistics with Google BigQuery integration
 - Interactive charts with Recharts
@@ -31,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - CI/CD deployment with Vercel
 
 ### Fixed
+
 - CORS issues with PyPI API
 - Dark mode logo visibility
 - Chart rendering issues
@@ -39,4 +42,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/gautammanak1/package-download-stat/compare/v1.0.0...HEAD
 [1.0.0]: https://github.com/gautammanak1/package-download-stat/releases/tag/v1.0.0
-

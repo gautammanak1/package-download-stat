@@ -39,7 +39,7 @@ Visit the live application: [https://npm-package-download-stat.vercel.app](https
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn or pnpm
 
 ### Clone the Repository
@@ -108,6 +108,7 @@ This project uses **CI/CD pipeline only** for deployments. Vercel automatic buil
 5. Or go to **Settings > Git > Deploy Hooks** and disable automatic deployments
 
 **Alternative Method**:
+
 - Go to **Settings > Git**
 - Scroll to **"Deploy Hooks"**
 - Disable automatic deployments for `main` branch
@@ -147,6 +148,7 @@ No environment variables are required for this project as it uses public npm API
 ## 📖 Usage
 
 ### For npm Packages:
+
 1. **Select npm**: Click the "npm" button in the header
 2. **Search Package**: Enter an npm package name (e.g., `react`, `lodash`, `express`)
 3. **View Statistics**: Click "Search" or press Enter to view download statistics
@@ -155,6 +157,7 @@ No environment variables are required for this project as it uses public npm API
 6. **View Details**: Check author information, maintainers, and README
 
 ### For PyPI Packages:
+
 1. **Select PyPI**: Click the "PyPI" button in the header
 2. **Search Package**: Enter a PyPI package name (e.g., `requests`, `numpy`, `pandas`)
 3. **View Statistics**: Click "Search" or press Enter to view download statistics
@@ -166,10 +169,12 @@ No environment variables are required for this project as it uses public npm API
 This project uses public APIs for both package managers:
 
 ### npm API:
+
 - **Download Statistics**: `https://api.npmjs.org/downloads/range/{start}:{end}/{package}`
 - **Package Info**: `https://registry.npmjs.org/{package}`
 
 ### PyPI API:
+
 - **Download Statistics**: `https://pypistats.org/api/packages/{package}/recent`
 - **Overall Downloads**: `https://pypistats.org/api/packages/{package}/overall`
 - **Package Info**: `https://pypi.org/pypi/{package}/json`

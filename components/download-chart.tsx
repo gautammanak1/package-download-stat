@@ -94,7 +94,8 @@ export function DownloadChart({ data, type }: DownloadChartProps) {
     >
       <div className="mb-4 text-center">
         <p className="text-sm text-muted-foreground">
-          Total downloads: <span className="font-semibold text-foreground">{totalDownloads.toLocaleString()}</span>
+          Total downloads:{" "}
+          <span className="font-semibold text-foreground">{totalDownloads.toLocaleString()}</span>
         </p>
       </div>
       <ResponsiveContainer width="100%" height={400} className="min-h-[300px]">
@@ -110,11 +111,7 @@ export function DownloadChart({ data, type }: DownloadChartProps) {
               height={80}
               interval="preserveStartEnd"
             />
-            <YAxis
-              className="text-xs"
-              tick={{ fill: "currentColor", fontSize: 12 }}
-              width={60}
-            />
+            <YAxis className="text-xs" tick={{ fill: "currentColor", fontSize: 12 }} width={60} />
             <Tooltip
               contentStyle={{
                 backgroundColor: "hsl(var(--card))",
@@ -130,7 +127,12 @@ export function DownloadChart({ data, type }: DownloadChartProps) {
               dataKey="downloads"
               stroke="hsl(var(--primary))"
               strokeWidth={3}
-              dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 2, stroke: "hsl(var(--card))" }}
+              dot={{
+                fill: "hsl(var(--primary))",
+                r: 4,
+                strokeWidth: 2,
+                stroke: "hsl(var(--card))",
+              }}
               activeDot={{ r: 7, strokeWidth: 2, stroke: "hsl(var(--card))" }}
             />
           </LineChart>
@@ -146,11 +148,7 @@ export function DownloadChart({ data, type }: DownloadChartProps) {
               height={80}
               interval="preserveStartEnd"
             />
-            <YAxis
-              className="text-xs"
-              tick={{ fill: "currentColor", fontSize: 12 }}
-              width={60}
-            />
+            <YAxis className="text-xs" tick={{ fill: "currentColor", fontSize: 12 }} width={60} />
             <Tooltip
               contentStyle={{
                 backgroundColor: "hsl(var(--card))",
@@ -161,15 +159,10 @@ export function DownloadChart({ data, type }: DownloadChartProps) {
               labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
               cursor={{ fill: "hsl(var(--primary))", opacity: 0.1 }}
             />
-            <Bar
-              dataKey="downloads"
-              fill="hsl(var(--primary))"
-              radius={[6, 6, 0, 0]}
-            />
+            <Bar dataKey="downloads" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
           </BarChart>
         )}
       </ResponsiveContainer>
     </motion.div>
   );
 }
-

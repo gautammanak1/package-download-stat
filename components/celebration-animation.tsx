@@ -40,13 +40,13 @@ export function CelebrationAnimation({ show, increase, message }: CelebrationAni
           {confetti.map((particle) => (
             <motion.div
               key={particle.id}
-              initial={{ 
-                y: -20, 
+              initial={{
+                y: -20,
                 x: `${particle.x}%`,
                 opacity: 1,
                 rotate: 0,
               }}
-              animate={{ 
+              animate={{
                 y: window.innerHeight + 100,
                 opacity: [1, 1, 0],
                 rotate: 360,
@@ -79,7 +79,7 @@ export function CelebrationAnimation({ show, increase, message }: CelebrationAni
           >
             <div className="text-center space-y-4">
               <motion.div
-                animate={{ 
+                animate={{
                   rotate: [0, -10, 10, -10, 10, 0],
                   scale: [1, 1.1, 1, 1.1, 1],
                 }}
@@ -112,7 +112,7 @@ export function CelebrationAnimation({ show, increase, message }: CelebrationAni
                 <span className="font-bold">+{increase.toLocaleString()}</span>
                 <span className="text-sm">more downloads today!</span>
               </motion.div>
-              
+
               {message && (
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -129,7 +129,7 @@ export function CelebrationAnimation({ show, increase, message }: CelebrationAni
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, scale: 0 }}
-                  animate={{ 
+                  animate={{
                     opacity: [0, 1, 0],
                     scale: [0, 1, 0],
                   }}
@@ -155,4 +155,3 @@ export function CelebrationAnimation({ show, increase, message }: CelebrationAni
     </AnimatePresence>
   );
 }
-

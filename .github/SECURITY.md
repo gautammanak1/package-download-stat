@@ -29,4 +29,3 @@ When using this project:
 - API routes validate all inputs before processing
 - CORS is properly configured for API endpoints
 - No sensitive data is stored client-side
-

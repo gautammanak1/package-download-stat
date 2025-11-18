@@ -2,16 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 
 /**
  * API Route for PyPI download statistics using Google BigQuery
- * 
+ *
  * Uses the official PyPI download statistics dataset from Google BigQuery:
  * bigquery-public-data.pypi.file_downloads
- * 
+ *
  * To enable BigQuery:
  * 1. Set up Google Cloud Project
  * 2. Enable BigQuery API
  * 3. Set GOOGLE_APPLICATION_CREDENTIALS environment variable
  *    OR use Application Default Credentials
- * 
+ *
  * Free tier: 1TB queries per month
  */
 
@@ -24,13 +24,13 @@ async function getBigQueryClient() {
 
   try {
     // Dynamic import to avoid errors if package not available
-    const { BigQuery } = await import('@google-cloud/bigquery');
-    const path = await import('path');
-    const fs = await import('fs');
-    
+    const { BigQuery } = await import("@google-cloud/bigquery");
+    const path = await import("path");
+    const fs = await import("fs");
+
     let bigqueryOptions: any = {};
     let credentialsPath: string | null = null;
-    
+
     // Priority 1: Check for JSON credentials in environment variable (Vercel)
     if (process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON) {
       try {
@@ -41,8 +41,7 @@ async function getBigQueryClient() {
         if (credentials.project_id) {
           bigqueryOptions.projectId = credentials.project_id;
         }
-      } catch (parseError: any) {
-      }
+      } catch (parseError: any) {}
     }
     // Priority 2: Check environment variable for file path
     else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
@@ -55,7 +54,7 @@ async function getBigQueryClient() {
         bigqueryOptions.keyFilename = credentialsPath;
         // Try to read project ID from file
         try {
-          const fileContent = fs.default.readFileSync(credentialsPath, 'utf8');
+          const fileContent = fs.default.readFileSync(credentialsPath, "utf8");
           const creds = JSON.parse(fileContent);
           if (creds.project_id) {
             bigqueryOptions.projectId = creds.project_id;
@@ -67,13 +66,13 @@ async function getBigQueryClient() {
     }
     // Priority 3: Check for credentials file in project root (local development)
     else {
-      const defaultPath = path.default.join(process.cwd(), 'extreme-battery-463111-f5.json');
+      const defaultPath = path.default.join(process.cwd(), "extreme-battery-463111-f5.json");
       if (fs.default.existsSync(defaultPath)) {
         credentialsPath = defaultPath;
         bigqueryOptions.keyFilename = credentialsPath;
         // Try to read project ID from file
         try {
-          const fileContent = fs.default.readFileSync(defaultPath, 'utf8');
+          const fileContent = fs.default.readFileSync(defaultPath, "utf8");
           const creds = JSON.parse(fileContent);
           if (creds.project_id) {
             bigqueryOptions.projectId = creds.project_id;
@@ -83,18 +82,18 @@ async function getBigQueryClient() {
         }
       }
     }
-    
+
     // If no credentials found, try Application Default Credentials
     if (!bigqueryOptions.credentials && !bigqueryOptions.keyFilename) {
     }
-    
+
     // Ensure project ID is set
     if (!bigqueryOptions.projectId && process.env.GOOGLE_CLOUD_PROJECT) {
       bigqueryOptions.projectId = process.env.GOOGLE_CLOUD_PROJECT;
     }
-    
+
     bigqueryClient = new BigQuery(bigqueryOptions);
-    
+
     return bigqueryClient;
   } catch (error: any) {
     return null;
@@ -108,10 +107,7 @@ export async function GET(request: NextRequest) {
   const overall = searchParams.get("overall") === "true";
 
   if (!packageName) {
-    return NextResponse.json(
-      { error: "Package name is required" },
-      { status: 400 }
-    );
+    return NextResponse.json({ error: "Package name is required" }, { status: 400 });
   }
 
   const normalizedName = packageName.toLowerCase();
@@ -123,7 +119,7 @@ export async function GET(request: NextRequest) {
       const response = await fetch(url, {
         signal: AbortSignal.timeout(5000),
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         return NextResponse.json({
@@ -134,7 +130,7 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       // Return null if request fails
     }
-    
+
     return NextResponse.json({
       success: true,
       overall: null,
@@ -144,7 +140,7 @@ export async function GET(request: NextRequest) {
   try {
     // Try BigQuery first (official source)
     const bigquery = await getBigQueryClient();
-    
+
     if (bigquery) {
       try {
         // Calculate date range based on period
@@ -173,12 +169,12 @@ export async function GET(request: NextRequest) {
             packageName: normalizedName,
             days: days,
           },
-          location: 'US', // BigQuery location
+          location: "US", // BigQuery location
           jobTimeoutMs: 30000, // 30 second timeout
         };
 
         const [job] = await bigquery.createQueryJob(options);
-        
+
         // Wait for job to complete
         const [rows] = await job.getQueryResults();
 
@@ -186,7 +182,8 @@ export async function GET(request: NextRequest) {
           const formattedData = rows.map((row: any) => {
             const dateValue = row.date?.value || row.date;
             return {
-              date: typeof dateValue === 'string' ? dateValue : dateValue.toISOString().split('T')[0],
+              date:
+                typeof dateValue === "string" ? dateValue : dateValue.toISOString().split("T")[0],
               downloads: parseInt(row.downloads) || 0,
             };
           });
@@ -208,11 +205,11 @@ export async function GET(request: NextRequest) {
       const url = `https://pypistats.org/api/packages/${normalizedName}/recent?period=${period}`;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-      
+
       const response = await fetch(url, {
         signal: controller.signal,
       });
-      
+
       clearTimeout(timeoutId);
 
       if (response.ok) {
@@ -238,12 +235,14 @@ export async function GET(request: NextRequest) {
         message: `Package "${packageName}" download statistics are not available through public APIs.`,
         bigqueryInfo: {
           dataset: "bigquery-public-data.pypi.file_downloads",
-          documentation: "https://packaging.python.org/en/latest/guides/analyzing-pypi-package-downloads/",
+          documentation:
+            "https://packaging.python.org/en/latest/guides/analyzing-pypi-package-downloads/",
           exampleQuery: `SELECT COUNT(*) AS num_downloads
 FROM \`bigquery-public-data.pypi.file_downloads\`
 WHERE file.project = '${normalizedName}'
   AND DATE(timestamp) BETWEEN DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY) AND CURRENT_DATE()`,
-          setupInstructions: "To enable BigQuery: 1) Set up GCP project, 2) Enable BigQuery API, 3) Set GOOGLE_APPLICATION_CREDENTIALS env var",
+          setupInstructions:
+            "To enable BigQuery: 1) Set up GCP project, 2) Enable BigQuery API, 3) Set GOOGLE_APPLICATION_CREDENTIALS env var",
         },
       },
       { status: 404 }
@@ -258,4 +257,3 @@ WHERE file.project = '${normalizedName}'
     );
   }
 }
-

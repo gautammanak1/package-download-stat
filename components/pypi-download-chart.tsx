@@ -38,7 +38,7 @@ interface PyPIDownloadChartProps {
 
 export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
   const [activeChart, setActiveChart] = useState<"downloads">("downloads");
-  
+
   const chartData = useMemo(() => {
     if (!data.data || data.data.length === 0) {
       return [];
@@ -105,7 +105,10 @@ export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
               height={80}
               tickFormatter={(value) => {
                 const date = new Date(value);
-                return format(date, type === "day" ? "MMM dd" : type === "week" ? "MMM dd" : "MMM yyyy");
+                return format(
+                  date,
+                  type === "day" ? "MMM dd" : type === "week" ? "MMM dd" : "MMM yyyy"
+                );
               }}
             />
             <YAxis
@@ -137,4 +140,3 @@ export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
     </motion.div>
   );
 }
-

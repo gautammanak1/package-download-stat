@@ -1,9 +1,9 @@
 ---
 name: Feature Request
 about: Suggest an idea for this project
-title: '[FEATURE] '
+title: "[FEATURE] "
 labels: enhancement
-assignees: ''
+assignees: ""
 ---
 
 ## Feature Description
@@ -26,9 +26,9 @@ assignees: ''
 
 <!-- Provide specific use cases for this feature -->
 
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Additional Context
 
@@ -37,4 +37,3 @@ assignees: ''
 ## Implementation Notes
 
 <!-- If you have ideas on how this could be implemented -->
-
