@@ -205,6 +205,12 @@ export function PyPIExtendedStats({ stats, packageName }: PyPIExtendedStatsProps
                   <Bar
                     dataKey="downloads"
                     radius={[6, 6, 0, 0]}
+                    label={{ 
+                      position: 'top', 
+                      fill: 'hsl(var(--foreground))',
+                      fontSize: 12,
+                      formatter: (value: number) => value.toLocaleString()
+                    }}
                   >
                     {monthlyChartData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COUNTRY_COLORS[index % COUNTRY_COLORS.length]} />
@@ -258,9 +264,12 @@ export function PyPIExtendedStats({ stats, packageName }: PyPIExtendedStatsProps
                   />
                   <Bar
                     dataKey="downloads"
-                    fill="hsl(var(--primary))"
                     radius={[0, 6, 6, 0]}
-                  />
+                  >
+                    {topDatesChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COUNTRY_COLORS[index % COUNTRY_COLORS.length]} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -432,9 +441,9 @@ export function PyPIExtendedStats({ stats, packageName }: PyPIExtendedStatsProps
                             backgroundColor: COUNTRY_COLORS[index % COUNTRY_COLORS.length],
                           }}
                         />
-                        {item.countryLabel}
+                        <span className="text-foreground">{item.countryLabel}</span>
                       </span>
-                      <span className="font-semibold">{item.downloads.toLocaleString()}</span>
+                      <span className="font-semibold text-foreground">{item.downloads.toLocaleString()}</span>
                     </button>
                   ))}
                 </div>

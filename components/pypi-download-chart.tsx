@@ -9,11 +9,27 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Cell,
 } from "recharts";
 import { format, parseISO } from "date-fns";
 import { PyPIDownloadPoint } from "@/lib/pypi-api";
 import { motion } from "framer-motion";
 import { ChartContainer, ChartStyle, type ChartConfig } from "@/components/ui/chart";
+
+const COUNTRY_COLORS = [
+  "#3b82f6", // Blue
+  "#ef4444", // Red
+  "#10b981", // Green
+  "#f59e0b", // Amber
+  "#8b5cf6", // Purple
+  "#ec4899", // Pink
+  "#06b6d4", // Cyan
+  "#f97316", // Orange
+  "#84cc16", // Lime
+  "#6366f1", // Indigo
+  "#14b8a6", // Teal
+  "#a855f7", // Violet
+];
 
 interface PyPIDownloadChartProps {
   data: PyPIDownloadPoint;
@@ -110,7 +126,11 @@ export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
                 return format(new Date(value), "MMM dd, yyyy");
               }}
             />
-            <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={[6, 6, 0, 0]} />
+            <Bar dataKey={activeChart} radius={[6, 6, 0, 0]}>
+              {chartData.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COUNTRY_COLORS[index % COUNTRY_COLORS.length]} />
+              ))}
+            </Bar>
           </BarChart>
         </ResponsiveContainer>
       </div>
