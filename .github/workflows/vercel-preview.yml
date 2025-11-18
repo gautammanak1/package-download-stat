@@ -23,15 +23,11 @@ jobs:
         run: npm ci
 
       - name: Create Google Cloud credentials file
+        env:
+          CREDENTIALS_JSON: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}
         run: |
-          CREDENTIALS_JSON='${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}'
           if [ -n "$CREDENTIALS_JSON" ]; then
-            printf '%s\n' "$CREDENTIALS_JSON" > extreme-battery-463111-f5.json
-            echo "✅ Google Cloud credentials file created"
-            # Verify JSON is valid
-            if command -v jq &> /dev/null; then
-              jq empty extreme-battery-463111-f5.json && echo "✅ JSON is valid" || echo "⚠️ JSON validation failed"
-            fi
+            node -e "const fs = require('fs'); const creds = process.env.CREDENTIALS_JSON; if (creds) { fs.writeFileSync('extreme-battery-463111-f5.json', creds); console.log('✅ Google Cloud credentials file created'); try { JSON.parse(creds); console.log('✅ JSON is valid'); } catch(e) { console.log('⚠️ JSON validation failed:', e.message); } }"
           else
             echo "⚠️ GOOGLE_APPLICATION_CREDENTIALS_JSON secret not found, BigQuery may not work"
           fi
