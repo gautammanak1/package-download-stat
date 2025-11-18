@@ -37,7 +37,12 @@ async function getBigQueryClient() {
         // Parse JSON credentials from environment variable
         const credentials = JSON.parse(process.env.GOOGLE_APPLICATION_CREDENTIALS_JSON);
         bigqueryOptions.credentials = credentials;
+        // Set project ID from credentials
+        if (credentials.project_id) {
+          bigqueryOptions.projectId = credentials.project_id;
+        }
         console.log('✅ Using BigQuery credentials from GOOGLE_APPLICATION_CREDENTIALS_JSON env var');
+        console.log(`✅ Project ID: ${credentials.project_id || 'not found'}`);
       } catch (parseError: any) {
         console.warn('⚠️ Failed to parse GOOGLE_APPLICATION_CREDENTIALS_JSON:', parseError.message);
       }
@@ -51,6 +56,16 @@ async function getBigQueryClient() {
       }
       if (fs.default.existsSync(credentialsPath)) {
         bigqueryOptions.keyFilename = credentialsPath;
+        // Try to read project ID from file
+        try {
+          const fileContent = fs.default.readFileSync(credentialsPath, 'utf8');
+          const creds = JSON.parse(fileContent);
+          if (creds.project_id) {
+            bigqueryOptions.projectId = creds.project_id;
+          }
+        } catch (e) {
+          // Ignore errors reading project ID
+        }
         console.log('✅ Using BigQuery credentials from:', credentialsPath);
       }
     }
@@ -60,6 +75,16 @@ async function getBigQueryClient() {
       if (fs.default.existsSync(defaultPath)) {
         credentialsPath = defaultPath;
         bigqueryOptions.keyFilename = credentialsPath;
+        // Try to read project ID from file
+        try {
+          const fileContent = fs.default.readFileSync(defaultPath, 'utf8');
+          const creds = JSON.parse(fileContent);
+          if (creds.project_id) {
+            bigqueryOptions.projectId = creds.project_id;
+          }
+        } catch (e) {
+          // Ignore errors reading project ID
+        }
         console.log('✅ Using BigQuery credentials from local file:', credentialsPath);
       }
     }
