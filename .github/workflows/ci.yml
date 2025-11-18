@@ -14,13 +14,6 @@ jobs:
     if: github.actor != 'dependabot[bot]'
     
     steps:
-
-jobs:
-  lint-and-type-check:
-    name: Lint and Type Check
-    runs-on: ubuntu-latest
-    
-    steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -47,7 +40,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: lint-and-type-check
     # Skip for Dependabot PRs
-    if: github.actor != 'dependabot[bot]' && needs.lint-and-type-check.result == 'success'
+    if: github.actor != 'dependabot[bot]' && (needs.lint-and-type-check.result == 'success' || needs.lint-and-type-check.result == 'skipped')
     
     steps:
       - name: Checkout code
