@@ -395,13 +395,13 @@ export default function Home() {
                       </div>
                     </div>
                   )}
-                  {packageManager === "pypi" && pypiOverallDownloads && (
+                  {packageManager === "pypi" && (
                     <div className="flex items-center gap-2">
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       <div>
                         <p className="text-sm text-muted-foreground">Period</p>
                         <p className="text-lg font-semibold capitalize">
-                          {pypiOverallDownloads.period}
+                          {pypiOverallDownloads?.period || pypiPeriod}
                         </p>
                       </div>
                     </div>
