@@ -376,10 +376,10 @@ export default function Home() {
                       </p>
                       <p className="text-lg font-semibold">
                         {packageManager === "npm" 
-                          ? (downloadData?.downloads?.reduce((sum, item) => sum + item.downloads, 0).toLocaleString() || 0)
+                          ? ((downloadData?.downloads?.reduce((sum, item) => sum + item.downloads, 0) || 0).toLocaleString())
                           : (pypiExtendedStats?.totalDownloads !== undefined
-                              ? pypiExtendedStats.totalDownloads.toLocaleString()
-                              : (pypiOverallDownloads?.total.toLocaleString() || pypiDownloadData?.data?.reduce((sum, item) => sum + item.downloads, 0).toLocaleString() || "N/A"))
+                              ? (pypiExtendedStats.totalDownloads || 0).toLocaleString()
+                              : ((pypiOverallDownloads?.total || 0).toLocaleString() || ((pypiDownloadData?.data?.reduce((sum, item) => sum + item.downloads, 0) || 0).toLocaleString()) || "N/A"))
                         }
                       </p>
                     </div>
