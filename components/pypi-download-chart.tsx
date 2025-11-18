@@ -1,20 +1,19 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
-  LineChart,
-  Line,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  BarChart,
-  Bar,
 } from "recharts";
 import { format, parseISO } from "date-fns";
 import { PyPIDownloadPoint } from "@/lib/pypi-api";
 import { motion } from "framer-motion";
+import { ChartContainer, ChartTooltip, ChartTooltipContent, ChartStyle, type ChartConfig } from "@/components/ui/chart";
 
 interface PyPIDownloadChartProps {
   data: PyPIDownloadPoint;
@@ -22,13 +21,15 @@ interface PyPIDownloadChartProps {
 }
 
 export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
+  const [activeChart, setActiveChart] = useState<"downloads">("downloads");
+  
   const chartData = useMemo(() => {
     if (!data.data || data.data.length === 0) {
       return [];
     }
 
     return data.data.map((item) => ({
-      date: format(parseISO(item.date), type === "day" ? "MMM dd" : type === "week" ? "MMM dd" : "MMM yyyy"),
+      date: item.date,
       downloads: item.downloads,
     }));
   }, [data, type]);
@@ -36,6 +37,13 @@ export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
   const totalDownloads = useMemo(() => {
     return data.data?.reduce((sum, item) => sum + item.downloads, 0) || 0;
   }, [data]);
+
+  const chartConfig: ChartConfig = {
+    downloads: {
+      label: "Downloads",
+      color: "hsl(var(--chart-1))",
+    },
+  };
 
   if (chartData.length === 0) {
     return (
@@ -52,48 +60,54 @@ export function PyPIDownloadChart({ data, type }: PyPIDownloadChartProps) {
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      <div className="mb-4 text-center">
-        <p className="text-sm text-muted-foreground">
-          Total downloads: <span className="font-semibold text-foreground">{totalDownloads.toLocaleString()}</span>
-        </p>
+      <div className="mb-4 flex items-center justify-between border-b pb-4">
+        <div>
+          <p className="text-sm text-muted-foreground">Total Downloads</p>
+          <p className="text-2xl font-bold">{totalDownloads.toLocaleString()}</p>
+        </div>
       </div>
-      <ResponsiveContainer width="100%" height={400} className="min-h-[300px]">
-        <LineChart data={chartData} margin={{ top: 5, right: 10, left: 0, bottom: 5 }}>
-          <CartesianGrid strokeDasharray="3 3" className="stroke-muted opacity-50" />
+      <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+        <BarChart
+          accessibilityLayer
+          data={chartData}
+          margin={{
+            left: 12,
+            right: 12,
+          }}
+        >
+          <CartesianGrid vertical={false} />
           <XAxis
             dataKey="date"
-            className="text-xs"
-            tick={{ fill: "currentColor", fontSize: 12 }}
-            angle={-45}
-            textAnchor="end"
-            height={80}
-            interval="preserveStartEnd"
+            tickLine={false}
+            axisLine={false}
+            tickMargin={8}
+            minTickGap={32}
+            tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }}
+            tickFormatter={(value) => {
+              const date = new Date(value);
+              return format(date, type === "day" ? "MMM dd" : type === "week" ? "MMM dd" : "MMM yyyy");
+            }}
           />
           <YAxis
-            className="text-xs"
-            tick={{ fill: "currentColor", fontSize: 12 }}
+            tickLine={false}
+            axisLine={false}
+            tick={{ fill: "hsl(var(--foreground))", fontSize: 12 }}
             width={60}
           />
-          <Tooltip
-            contentStyle={{
-              backgroundColor: "hsl(var(--card))",
-              border: "1px solid hsl(var(--border))",
-              borderRadius: "var(--radius)",
-              boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-            }}
-            labelStyle={{ color: "hsl(var(--foreground))", fontWeight: 600 }}
-            cursor={{ stroke: "hsl(var(--primary))", strokeWidth: 1 }}
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                className="w-[150px]"
+                nameKey="downloads"
+                labelFormatter={(value) => {
+                  return format(new Date(value), "MMM dd, yyyy");
+                }}
+              />
+            }
           />
-          <Line
-            type="monotone"
-            dataKey="downloads"
-            stroke="hsl(var(--primary))"
-            strokeWidth={3}
-            dot={{ fill: "hsl(var(--primary))", r: 4, strokeWidth: 2, stroke: "hsl(var(--card))" }}
-            activeDot={{ r: 7, strokeWidth: 2, stroke: "hsl(var(--card))" }}
-          />
-        </LineChart>
-      </ResponsiveContainer>
+          <Bar dataKey={activeChart} fill={`var(--color-${activeChart})`} radius={[6, 6, 0, 0]} />
+        </BarChart>
+      </ChartContainer>
     </motion.div>
   );
 }
