@@ -1,6 +1,6 @@
-# NPM-PACKAGE-DOWNLOAD-STAT
+# PACKAGE-DOWNLOAD-STAT
 
-A beautiful npm package download statistics viewer built with Next.js, shadcn/ui, Tailwind CSS, and Framer Motion. View download statistics for any npm package with interactive charts and detailed package information.
+A beautiful package download statistics viewer for **npm** and **PyPI** packages built with Next.js, shadcn/ui, Tailwind CSS, and Framer Motion. View download statistics for any npm or PyPI package with interactive charts and detailed package information.
 
 ![NPM Package Download Statistics](https://img.shields.io/badge/Next.js-14-black?style=for-the-badge&logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.4-blue?style=for-the-badge&logo=typescript)
@@ -8,10 +8,11 @@ A beautiful npm package download statistics viewer built with Next.js, shadcn/ui
 
 ## ✨ Features
 
-- 🔍 **Search Packages** - Search for any npm package by name
+- 🔄 **Dual Package Manager Support** - Switch between npm and PyPI packages
+- 🔍 **Search Packages** - Search for any npm or PyPI package by name
 - 📊 **Interactive Charts** - Visualize download statistics with beautiful charts
-- 📅 **Custom Date Ranges** - View stats for 7 days, 30 days, 90 days, 1 year, or custom dates
-- 📈 **Multiple Views** - Switch between Daily, Weekly, Monthly, and Yearly chart views
+- 📅 **Custom Date Ranges** - View stats for 7 days, 30 days, 90 days, 1 year, or custom dates (npm)
+- 📈 **Multiple Views** - Switch between Daily, Weekly, Monthly, and Yearly chart views (npm) or Day/Week/Month (PyPI)
 - 👤 **Author Information** - View package author details and maintainers
 - 📖 **README Display** - Full markdown README rendering with syntax highlighting
 - 🌓 **Dark/Light Theme** - Toggle between dark and light themes
@@ -144,18 +145,33 @@ No environment variables are required for this project as it uses public npm API
 
 ## 📖 Usage
 
-1. **Search Package**: Enter an npm package name in the search box (e.g., `react`, `lodash`, `express`)
-2. **View Statistics**: Click "Search" or press Enter to view download statistics
-3. **Explore Charts**: Switch between Daily, Weekly, Monthly, and Yearly views using tabs
-4. **Custom Date Range**: Use quick buttons (7 days, 30 days, etc.) or select custom dates
-5. **View Details**: Check author information, maintainers, and README
+### For npm Packages:
+1. **Select npm**: Click the "npm" button in the header
+2. **Search Package**: Enter an npm package name (e.g., `react`, `lodash`, `express`)
+3. **View Statistics**: Click "Search" or press Enter to view download statistics
+4. **Explore Charts**: Switch between Daily, Weekly, Monthly, and Yearly views using tabs
+5. **Custom Date Range**: Use quick buttons (7 days, 30 days, etc.) or select custom dates
+6. **View Details**: Check author information, maintainers, and README
+
+### For PyPI Packages:
+1. **Select PyPI**: Click the "PyPI" button in the header
+2. **Search Package**: Enter a PyPI package name (e.g., `requests`, `numpy`, `pandas`)
+3. **View Statistics**: Click "Search" or press Enter to view download statistics
+4. **Explore Charts**: Switch between Day, Week, and Month views using period buttons
+5. **View Details**: Check author information, homepage, and package description
 
 ## 🔌 API
 
-This project uses the public npm API:
+This project uses public APIs for both package managers:
 
+### npm API:
 - **Download Statistics**: `https://api.npmjs.org/downloads/range/{start}:{end}/{package}`
 - **Package Info**: `https://registry.npmjs.org/{package}`
+
+### PyPI API:
+- **Download Statistics**: `https://pypistats.org/api/packages/{package}/recent`
+- **Overall Downloads**: `https://pypistats.org/api/packages/{package}/overall`
+- **Package Info**: `https://pypi.org/pypi/{package}/json`
 
 No API keys required - all endpoints are public.
 
