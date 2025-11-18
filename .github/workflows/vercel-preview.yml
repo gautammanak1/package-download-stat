@@ -35,6 +35,12 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Set Vercel environment variable
+        run: |
+          if [ -n "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}" ]; then
+            echo '${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}' | npx vercel env add GOOGLE_APPLICATION_CREDENTIALS_JSON preview --token ${{ secrets.VERCEL_TOKEN }} --scope ${{ secrets.VERCEL_ORG_ID }} --yes || echo "⚠️ Environment variable may already exist or failed to set"
+          fi
+
       - name: Deploy to Vercel Preview
         uses: amondnet/vercel-action@v25
         env:
@@ -43,6 +49,6 @@ jobs:
           vercel-token: ${{ secrets.VERCEL_TOKEN }}
           vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-args: '--yes --env GOOGLE_APPLICATION_CREDENTIALS_JSON=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_JSON }}'
+          vercel-args: '--yes'
           working-directory: ./
 
