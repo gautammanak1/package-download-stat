@@ -335,7 +335,17 @@ export default function Home() {
 
             {/* README */}
             {packageInfo?.readme && (
-              <ReadmeViewer readme={packageInfo.readme} />
+              <ReadmeViewer 
+                readme={packageInfo.readme} 
+                packageName={packageInfo.name}
+                repositoryUrl={
+                  typeof packageInfo.repository === 'string' 
+                    ? packageInfo.repository 
+                    : packageInfo.repository?.url || 
+                      packageInfo.repository?.github || 
+                      packageInfo.homepage
+                }
+              />
             )}
           </motion.div>
         )}
