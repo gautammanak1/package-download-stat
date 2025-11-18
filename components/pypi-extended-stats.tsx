@@ -147,6 +147,9 @@ export function PyPIExtendedStats({ stats, packageName }: PyPIExtendedStatsProps
                     dataKey="month"
                     className="text-xs"
                     tick={{ fill: "currentColor", fontSize: 12 }}
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
                   />
                   <YAxis
                     className="text-xs"
@@ -165,9 +168,12 @@ export function PyPIExtendedStats({ stats, packageName }: PyPIExtendedStatsProps
                   />
                   <Bar
                     dataKey="downloads"
-                    fill="hsl(var(--primary))"
                     radius={[6, 6, 0, 0]}
-                  />
+                  >
+                    {monthlyChartData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COUNTRY_COLORS[index % COUNTRY_COLORS.length]} />
+                    ))}
+                  </Bar>
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
