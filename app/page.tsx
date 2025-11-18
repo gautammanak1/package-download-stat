@@ -699,7 +699,16 @@ export default function Home() {
                             <p className="text-sm text-muted-foreground mt-2">
                               <strong>Alternative:</strong> Check{" "}
                               <a
-                                href={`https://pypistats.org/packages/${packageInfo?.info?.name || packageName}`}
+                                href={(() => {
+                                  // Validate package name to prevent XSS - only allow valid PyPI package names
+                                  const pkg = packageInfo?.info?.name || packageName;
+                                  if (typeof pkg !== "string") return "#";
+                                  // PyPI package names: letters, numbers, underscores, hyphens, dots
+                                  const isValid = /^[A-Za-z0-9_.-]+$/.test(pkg);
+                                  return isValid
+                                    ? `https://pypistats.org/packages/${encodeURIComponent(pkg)}`
+                                    : "#";
+                                })()}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary hover:underline"

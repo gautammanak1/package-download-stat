@@ -30,10 +30,10 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         run: |
           PR_TITLE="${{ github.event.pull_request.title }}"
-          # Convert to lowercase for case-insensitive matching
-          TITLE_LOWER=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]')
-          
-          # Check if title starts with valid type (case-insensitive)
+          # Convert to lowercase and replace slashes with colons for matching
+          TITLE_LOWER=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]' | sed 's/\//:/g')
+
+          # Check if title starts with valid type (case-insensitive, handles Fix/ or fix:)
           if echo "$TITLE_LOWER" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:"; then
             echo "✅ PR title format is valid: $PR_TITLE"
             exit 0
@@ -42,6 +42,7 @@ jobs:
             echo "PR title must start with one of: feat, fix, docs, style, refactor, perf, test, chore"
             echo "Examples:"
             echo "  - fix: Allow merge commit messages"
+            echo "  - Fix: Allow merge commit messages"
             echo "  - feat: Add new feature"
             echo "  - docs: Update README"
             exit 1
