@@ -28,26 +28,24 @@ jobs:
 
       - name: Check PR title format
         if: github.actor != 'dependabot[bot]'
-        uses: amannn/action-semantic-pull-request@v5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          types: |
-            feat
-            fix
-            docs
-            style
-            refactor
-            perf
-            test
-            chore
-          scopes: |
-            charts
-            api
-            ui
-            components
-            config
-            docs
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          # Convert to lowercase for case-insensitive matching
+          TITLE_LOWER=$(echo "$PR_TITLE" | tr '[:upper:]' '[:lower:]')
+          
+          # Check if title starts with valid type (case-insensitive)
+          if echo "$TITLE_LOWER" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:"; then
+            echo "✅ PR title format is valid: $PR_TITLE"
+            exit 0
+          else
+            echo "❌ Invalid PR title format: $PR_TITLE"
+            echo "PR title must start with one of: feat, fix, docs, style, refactor, perf, test, chore"
+            echo "Examples:"
+            echo "  - fix: Allow merge commit messages"
+            echo "  - feat: Add new feature"
+            echo "  - docs: Update README"
+            exit 1
+          fi
 
       - name: Validate commit messages
         if: github.actor != 'dependabot[bot]'
