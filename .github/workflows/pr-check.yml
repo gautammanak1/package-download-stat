@@ -52,16 +52,21 @@ jobs:
         if: github.actor != 'dependabot[bot]'
         run: |
           git log --oneline origin/main..HEAD | while read line; do
-            # Skip merge commits (they start with "Merge" or have "into" in them)
-            if echo "$line" | grep -qE "^[a-f0-9]+ Merge|into [a-f0-9]+"; then
+            # Skip merge commits (they contain "Merge" or "into")
+            if echo "$line" | grep -qE "Merge|into [a-f0-9]+"; then
               echo "ℹ️ Skipping merge commit: $line"
               continue
             fi
-            # Validate other commits follow Conventional Commits format
-            if ! echo "$line" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:"; then
-              echo "❌ Invalid commit message: $line"
+            # Extract commit message (everything after the hash and space)
+            COMMIT_MSG=$(echo "$line" | sed 's/^[a-f0-9]* //')
+            # Validate commit message follows Conventional Commits format
+            if ! echo "$COMMIT_MSG" | grep -qE "^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:"; then
+              echo "❌ Invalid commit message: $COMMIT_MSG"
               echo "Commit messages must follow Conventional Commits format"
+              echo "Example: fix: Description of the fix"
               exit 1
+            else
+              echo "✅ Valid commit: $COMMIT_MSG"
             fi
           done
 
